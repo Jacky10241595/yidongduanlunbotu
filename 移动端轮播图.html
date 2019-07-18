@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        header {
+            height: 100px;
+            background-color: yellow;
+        }
+
+        nav {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        nav>ul {
+            display: flex;
+            /* 多了前后的两张 */
+            width: 800%;
+            /* 动画不能一开始就加，如果一开始就加了，会导致我们第一次的切换也是以动画的形式进行的 */
+            /* transition:transform 1s; */
+        }
+
+        li {
+            flex: 1;
+        }
+
+        li img {
+            width: 100%;
+            vertical-align: middle;
+        }
+
+        main {
+            height: 500px;
+            background-color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        页面的头部
+    </header>
+    <nav>
+        <!-- li*6>a[#]>img[src=./images/$.jpg] -->
+        <!-- 为了实现无缝滚动，把图片列表前后加上1张，前后多了一张，要记得把ul的宽度改成 800% -->
+        <ul>
+            <li><a href="#"><img src="./images/6.jpg" alt=""></a></li>
+            <li><a href="#"><img src="./images/1.jpg" alt=""></a></li>
+            <li><a href="#"><img src="./images/2.jpg" alt=""></a></li>
+            <li><a href="#"><img src="./images/3.jpg" alt=""></a></li>
+            <li><a href="#"><img src="./images/4.jpg" alt=""></a></li>
+            <li><a href="#"><img src="./images/5.jpg" alt=""></a></li>
+            <li><a href="#"><img src="./images/6.jpg" alt=""></a></li>
+            <li><a href="#"><img src="./images/1.jpg" alt=""></a></li>
+        </ul>
+    </nav>
+    <main>
+        其他布局
+    </main>
+</body>
+<script src="./zepto.js"></script>
+<script src="./touch.js"></script>
+<script>
+    // 实现效果:左滑:从n到n+1张;右滑:从n到n-1张
+    // 获取元素,zepto写法
+    let ul = $('nav>ul');
+    // 图片宽度与nav元素宽度相同,所以得到图片宽度如下
+    let imgWidth = $('nav').width();
+    //定义变量,表示当前是第几张图片.要实现无缝滚动,那么第一张的索引,就要从1开始
+    let currentIndex = 1;
+    // 算出ul在第一张的位置
+    let target = currentIndex * imgWidth * -1;
+    // 过渡动画
+    ul.css('transform', 'translate(' + target + 'px)');   //下面写法一样的
+    //ul[0].style.transform = 'translate('+ target +'px)';
+    //因为代码的执行速度非常快，就算是先设置ul的位置，再加动画，也是瞬间完成，还是会有动画 - 解决方案是： 让代码等一会再加过渡动画
+    setTimeout(() => {
+        // 在设置了第一张图片位置之后，给ul添加过渡动画
+        ul.css('transition', 'transform 600ms');
+    },10);
+    // 注册向左滑动事件
+    ul.on('swipeLeft', function () {
+        // 让ul从第n张到第n+1张
+        currentIndex++;
+        //算出ul应该在得位置，设置ul的位置
+        let target = currentIndex * imgWidth * -1;
+        ul.css('transform', 'translate(' + target + 'px)');
+    });
+    // 向右滑动
+    ul.on('swipeRight',function(){
+        currentIndex--;
+        let target=currentIndex*imgWidth*-1;
+        ul.css('transform', 'translate(' + target + 'px)');
+    })
+
+    //把ul从伪数组中取出来，作为DOM里面的元素对象，才可以操作
+    ul[0].addEventListener('transitionend', function () {
+        //ul的动画结束之后，如果当前已经是最后一张(用户认为的第一张,也就是第8张,把图片切换到实际上用户认为第一张,也就是第2张
+        if (currentIndex === ul[0].children.length - 1) {
+            currentIndex = 1;
+            let target = currentIndex * imgWidth * -1;
+            // 移除动画
+            ul[0].style.transition = '';
+            ul.css('transform', 'translate(' + target + 'px)');
+            setTimeout(() => {
+                // 在设置了第一张图片位置之后，给ul添加过渡动画
+                ul.css('transition', 'transform 600ms');
+            }, 10);
+        }
+        //向左滑,用户看到从第一张切换至最后一张,实际上是从第二张换到第一张
+        if(currentIndex==0){
+            currentIndex=ul[0].children.length-2;
+            let target=currentIndex*imgWidth*-1;
+            //移除动画
+            ul[0].style.transition='';
+            ul.css('transform','translate('+target+'px)');
+            setTimeout(()=>{
+                ul.css('transition','transform 600ms');
+            },10)
+        }
+    })
+
+</script>
+
+</html>

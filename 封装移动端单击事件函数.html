@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 200px;
+            height: 200px;
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box"></div>
+</body>
+<script src="./tap.js"></script>
+<script>
+    // 移动端的单击事件:
+    // 条件:1.单指操作;2.按下与松开时间间隔不能太长--200ms
+    //      3.按下与松开位置不能偏差太远--50px
+    let box = document.querySelector('.box');
+    tap(box, function () {
+        location.href = 'http://www.baidu.com'
+    })
+</script>
+
+</html>
